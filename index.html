@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>劲面仔 · 交互原型</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background: #f0f0f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ========= 页面说明区 ========= */
+  .page-title {
+    width: 100%;
+    max-width: 1400px;
+    padding: 32px 24px 16px;
+    text-align: center;
+  }
+  .page-title h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #111;
+    letter-spacing: 0.5px;
+  }
+  .page-title p {
+    font-size: 13px;
+    color: #999;
+    margin-top: 6px;
+  }
+
+  /* ========= 手机屏幕容器网格 ========= */
+  .screens-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: center;
+    padding: 16px 24px 48px;
+    max-width: 1500px;
+  }
+
+  .screen-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .screen-label {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    text-align: center;
+  }
+  .screen-label strong {
+    display: block;
+    font-size: 13px;
+    color: #222;
+    margin-bottom: 2px;
+  }
+
+  /* ========= 手机壳 ========= */
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: #fff;
+    border-radius: 44px;
+    box-shadow: 0 0 0 10px #1a1a1a, 0 20px 60px rgba(0,0,0,0.25), inset 0 0 0 1px #333;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ========= 状态栏 ========= */
+  .status-bar {
+    height: 44px;
+    background: #fff;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 28px 8px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .status-bar.dark { background: transparent; }
+  .status-time { font-size: 15px; font-weight: 600; color: #111; }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+  .status-icons span { font-size: 13px; color: #111; }
+
+  /* ========= 导航栏 ========= */
+  .nav-bar {
+    height: 56px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 0.5px solid #e5e5e5;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 9;
+  }
+  .nav-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #111;
+    flex: 1;
+    text-align: center;
+  }
+  .nav-back {
+    font-size: 16px;
+    color: #07c160;
+    cursor: pointer;
+    width: 40px;
+    display: flex;
+    align-items: center;
+  }
+  .nav-right {
+    width: 40px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .nav-right span {
+    font-size: 22px;
+    color: #07c160;
+    cursor: pointer;
+  }
+
+  /* ========= 滚动内容区 ========= */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #f7f7f7;
+    scrollbar-width: none;
+  }
+  .content::-webkit-scrollbar { display: none; }
+  .content.white-bg { background: #fff; }
+
+  /* ========= 底部标签栏 ========= */
+  .tab-bar {
+    height: 83px;
+    background: #fff;
+    border-top: 0.5px solid #e5e5e5;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 10px;
+    flex-shrink: 0;
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+  .tab-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .tab-text {
+    font-size: 10px;
+    color: #999;
+  }
+  .tab-item.active .tab-text { color: #07c160; }
+  .tab-item.active .tab-icon { filter: none; }
+
+  /* ========= 通用卡片 ========= */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    margin: 0 16px 12px;
+    padding: 16px;
+    box-shadow: none;
+  }
+  .card + .card { margin-top: 0; }
+
+  /* ========= 首页 Hero ========= */
+  .home-hero {
+    background: linear-gradient(135deg, #07c160 0%, #05a050 100%);
+    padding: 24px 20px 28px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-hero::before {
+    content: '';
+    position: absolute;
+    right: -20px; top: -20px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+  }
+  .home-hero::after {
+    content: '';
+    position: absolute;
+    right: 30px; top: 40px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+  }
+  .home-hero-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+  .home-hero h2 {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .home-hero p {
+    font-size: 13px;
+    opacity: 0.85;
+    line-height: 1.5;
+  }
+  .home-stats {
+    display: flex;
+    gap: 0;
+    margin-top: 20px;
+  }
+  .home-stat {
+    flex: 1;
+    text-align: center;
+  }
+  .home-stat + .home-stat {
+    border-left: 1px solid rgba(255,255,255,0.3);
+  }
+  .home-stat .num {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .home-stat .label {
+    font-size: 11px;
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 16px 10px;
+  }
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111;
+  }
+  .section-more {
+    font-size: 13px;
+    color: #07c160;
+  }
+
+  /* 首页快捷入口 */
+  .quick-entry-grid {
+    display: flex;
+    gap: 0;
+    padding: 0 16px 4px;
+    background: #fff;
+  }
+  .quick-entry {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 8px;
+    cursor: pointer;
+  }
+  .quick-icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+  .quick-icon-wrap.green  { background: #e8f8ef; }
+  .quick-icon-wrap.blue   { background: #e8f2fe; }
+  .quick-icon-wrap.orange { background: #fff3e8; }
+  .quick-entry-label { font-size: 12px; color: #333; font-weight: 500; }
+
+  /* 首页最新场次预告 */
+  .preview-card {
+    background: #fff;
+    border-radius: 12px;
+    margin: 0 16px 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .preview-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #07c160;
+    flex-shrink: 0;
+  }
+  .preview-info { flex: 1; }
+  .preview-info .title { font-size: 14px; font-weight: 500; color: #111; }
+  .preview-info .meta { font-size: 12px; color: #999; margin-top: 3px; }
+  .preview-btn {
+    background: #07c160;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 6px;
+    padding: 5px 12px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  /* ========= 群面场次列表 ========= */
+  .session-card {
+    background: #fff;
+    border-radius: 12px;
+    margin: 0 16px 12px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .session-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: #07c160;
+    border-radius: 3px 0 0 3px;
+  }
+  .session-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .session-tag.recruiting { background: #e8f8ef; color: #07c160; }
+  .session-tag.confirmed  { background: #e8f2fe; color: #1677ff; }
+  .session-tag.full       { background: #f5f5f5; color: #999; }
+  .session-name { font-size: 16px; font-weight: 600; color: #111; margin-bottom: 8px; }
+  .session-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin-bottom: 12px;
+  }
+  .session-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #666;
+  }
+  .session-meta-icon { font-size: 13px; }
+  .session-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: #07c160;
+    transition: width 0.3s;
+  }
+  .progress-fill.warning { background: #faad14; }
+  .progress-fill.danger  { background: #ff4d4f; }
+  .progress-text { font-size: 12px; color: #666; white-space: nowrap; }
+  .session-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .seat-avatars { display: flex; gap: -4px; }
+  .seat-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: #e8f8ef;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    color: #07c160;
+    font-weight: 600;
+    margin-left: -6px;
+  }
+  .seat-avatar:first-child { margin-left: 0; }
+  .seat-empty {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px dashed #ddd;
+    background: #fafafa;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    color: #ccc;
+    margin-left: -6px;
+  }
+  .enroll-btn {
+    background: #07c160;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 7px 18px;
+    cursor: pointer;
+    border: none;
+  }
+  .enroll-btn.disabled {
+    background: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+  }
+
+  /* ========= 群面详情页 ========= */
+  .detail-hero {
+    background: #fff;
+    padding: 20px 16px 16px;
+    border-bottom: 0.5px solid #e5e5e5;
+  }
+  .detail-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #e8f8ef;
+    color: #07c160;
+    margin-bottom: 8px;
+  }
+  .detail-title { font-size: 18px; font-weight: 700; color: #111; margin-bottom: 12px; }
+  .detail-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .detail-meta-item {
+    background: #f7f7f7;
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .detail-meta-item .key { font-size: 11px; color: #999; margin-bottom: 4px; }
+  .detail-meta-item .val { font-size: 14px; font-weight: 600; color: #111; }
+  .detail-section { padding: 16px 16px 0; }
+  .detail-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .detail-section-title::before {
+    content: '';
+    width: 3px; height: 14px;
+    background: #07c160;
+    border-radius: 2px;
+  }
+  .member-list { display: flex; flex-direction: column; gap: 8px; }
+  .member-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f7f7f7;
+    border-radius: 8px;
+  }
+  .member-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #e8f8ef;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #07c160; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .member-name { font-size: 13px; font-weight: 500; color: #111; }
+  .member-desc { font-size: 11px; color: #999; }
+  .member-slot {
+    border: 2px dashed #e0e0e0;
+    background: #fafafa;
+  }
+  .member-slot .member-avatar { background: #f0f0f0; color: #ccc; }
+  .member-slot .member-name { color: #ccc; }
+  .notice-box {
+    margin: 16px;
+    background: #fffbe8;
+    border-radius: 8px;
+    padding: 12px 14px;
+    border: 1px solid #ffe58f;
+  }
+  .notice-box .notice-title { font-size: 12px; font-weight: 600; color: #d48806; margin-bottom: 6px; }
+  .notice-box ul { padding-left: 14px; }
+  .notice-box li { font-size: 12px; color: #666; line-height: 1.7; }
+  .bottom-bar {
+    background: #fff;
+    padding: 12px 16px;
+    border-top: 0.5px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .price-area .price { font-size: 20px; font-weight: 700; color: #f5222d; }
+  .price-area .price-label { font-size: 11px; color: #999; }
+  .confirm-btn {
+    flex: 1;
+    background: #07c160;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 10px;
+    height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+
+  /* ========= 师资列表 ========= */
+  .teacher-card {
+    background: #fff;
+    border-radius: 12px;
+    margin: 0 16px 12px;
+    padding: 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .teacher-avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .teacher-avatar.av1 { background: linear-gradient(135deg, #07c160, #05a050); }
+  .teacher-avatar.av2 { background: linear-gradient(135deg, #1677ff, #0958d9); }
+  .teacher-avatar.av3 { background: linear-gradient(135deg, #fa8c16, #d46b08); }
+  .teacher-info { flex: 1; }
+  .teacher-name { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 4px; }
+  .teacher-title { font-size: 12px; color: #07c160; margin-bottom: 6px; }
+  .teacher-desc { font-size: 12px; color: #666; line-height: 1.6; margin-bottom: 10px; }
+  .teacher-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .teacher-tag {
+    background: #f5f5f5;
+    color: #555;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .teacher-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .teacher-price { font-size: 14px; color: #f5222d; font-weight: 600; }
+  .teacher-price span { font-size: 11px; color: #999; font-weight: 400; }
+  .book-btn {
+    background: #07c160;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 7px 16px;
+    cursor: pointer;
+  }
+
+  /* ========= 预约时间页 ========= */
+  .booking-teacher {
+    background: #fff;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border-bottom: 0.5px solid #e5e5e5;
+  }
+  .booking-teacher-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, #07c160, #05a050);
+    flex-shrink: 0;
+  }
+  .booking-teacher-name { font-size: 16px; font-weight: 600; color: #111; }
+  .booking-teacher-title { font-size: 12px; color: #07c160; margin-top: 3px; }
+  .booking-teacher-price { margin-left: auto; font-size: 16px; font-weight: 700; color: #f5222d; }
+  .calendar-section { padding: 16px; background: #fff; margin-bottom: 8px; }
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .calendar-header .month { font-size: 15px; font-weight: 600; color: #111; }
+  .calendar-header .arrow { font-size: 18px; color: #07c160; cursor: pointer; padding: 0 8px; }
+  .week-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .week-header span { font-size: 11px; color: #999; }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 13px;
+    color: #333;
+    cursor: pointer;
+    position: relative;
+  }
+  .cal-day.empty { cursor: default; }
+  .cal-day.disabled { color: #ccc; cursor: not-allowed; }
+  .cal-day.has-slot { font-weight: 600; }
+  .cal-day.has-slot::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #07c160;
+  }
+  .cal-day.selected {
+    background: #07c160;
+    color: #fff;
+  }
+  .cal-day.selected::after { background: #fff; }
+  .cal-day.today { color: #07c160; font-weight: 700; }
+
+  .timeslot-section { padding: 16px; background: #fff; }
+  .timeslot-title { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 12px; }
+  .timeslot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .timeslot {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .timeslot .time { font-size: 13px; font-weight: 500; color: #111; }
+  .timeslot .slot-tag { font-size: 10px; color: #07c160; margin-top: 2px; }
+  .timeslot.selected { border-color: #07c160; background: #e8f8ef; }
+  .timeslot.booked { border-color: #f0f0f0; background: #f7f7f7; }
+  .timeslot.booked .time { color: #ccc; }
+  .timeslot.booked .slot-tag { color: #ccc; }
+
+  /* ========= 案例展示 ========= */
+  .case-filter {
+    background: #fff;
+    padding: 12px 16px;
+    display: flex;
+    gap: 8px;
+    border-bottom: 0.5px solid #e5e5e5;
+    overflow-x: auto;
+  }
+  .case-filter::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    white-space: nowrap;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    background: #f5f5f5;
+    color: #555;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .filter-chip.active { background: #07c160; color: #fff; }
+
+  .case-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .case-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .case-card-img {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .case-card-img.bg1 { background: linear-gradient(135deg, #e8f8ef, #c3f0d9); }
+  .case-card-img.bg2 { background: linear-gradient(135deg, #e8f2fe, #c4dafd); }
+  .case-card-img.bg3 { background: linear-gradient(135deg, #fff3e8, #fdd5aa); }
+  .case-img-badge {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: #07c160;
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .case-card-body { padding: 14px; }
+  .case-company { font-size: 12px; color: #07c160; font-weight: 500; margin-bottom: 4px; }
+  .case-title { font-size: 15px; font-weight: 600; color: #111; margin-bottom: 6px; }
+  .case-desc { font-size: 12px; color: #777; line-height: 1.6; margin-bottom: 10px; }
+  .case-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .case-avatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #e8f8ef;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #07c160;
+  }
+  .case-user { font-size: 12px; color: #555; }
+  .case-tags { margin-left: auto; display: flex; gap: 4px; }
+  .case-tag { font-size: 10px; color: #999; background: #f5f5f5; padding: 2px 6px; border-radius: 4px; }
+
+  /* ========= 截图感说明条 ========= */
+  .screenshot-hint {
+    background: #f0f0f0;
+    border-radius: 12px;
+    margin: 0 16px 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .screenshot-hint .big-text { font-size: 36px; margin-bottom: 8px; }
+  .screenshot-hint .hint-title { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; }
+  .screenshot-hint .hint-desc { font-size: 12px; color: #999; line-height: 1.5; }
+
+  /* ========= 案例截图 mock ========= */
+  .offer-screenshot {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e5e5e5;
+    margin: 0 16px 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .screenshot-header {
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .screenshot-header.wechat { background: #07c160; }
+  .screenshot-header.email  { background: #1677ff; }
+  .screenshot-header.offer  { background: #fff; border-bottom: 1px solid #e5e5e5; }
+  .screenshot-header .app-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .screenshot-header .app-name { font-size: 14px; font-weight: 600; color: #fff; }
+  .screenshot-header .app-sub  { font-size: 11px; color: rgba(255,255,255,0.7); }
+  .screenshot-body { background: #fff; padding: 12px 14px; }
+  .chat-bubble {
+    background: #e8f8ef;
+    border-radius: 0 10px 10px 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #111;
+    line-height: 1.6;
+    margin-bottom: 8px;
+    max-width: 85%;
+  }
+  .chat-bubble.right {
+    background: #07c160;
+    color: #fff;
+    border-radius: 10px 0 10px 10px;
+    margin-left: auto;
+    margin-bottom: 0;
+  }
+  .offer-logo-area {
+    text-align: center;
+    padding: 16px 14px;
+    background: #fafafa;
+  }
+  .offer-company-name { font-size: 18px; font-weight: 700; color: #111; margin-bottom: 4px; }
+  .offer-text { font-size: 13px; color: #333; margin-bottom: 4px; }
+  .offer-highlight { font-size: 22px; font-weight: 700; color: #07c160; }
+  .offer-sub { font-size: 11px; color: #999; }
+  .case-stats-row {
+    display: flex;
+    padding: 10px 14px;
+    background: #fff;
+    border-top: 0.5px solid #f0f0f0;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+  .case-stat { font-size: 12px; color: #999; }
+
+  /* 分隔空白 */
+  .spacer { height: 12px; background: #f7f7f7; }
+  .spacer-8 { height: 8px; background: #f7f7f7; }
+
+  /* 空状态 */
+  .empty-state {
+    text-align: center;
+    padding: 32px 20px;
+    color: #ccc;
+  }
+  .empty-state .emoji { font-size: 40px; margin-bottom: 10px; }
+  .empty-state p { font-size: 13px; }
+
+  /* ========= 说明区域（原型图标注） ========= */
+  .proto-note {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #aaa;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* 页面区域分组标题 */
+  .group-title {
+    width: 100%;
+    max-width: 1400px;
+    padding: 8px 24px 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <h1>劲面仔 · 交互原型图</h1>
+  <p>手机端应用 · 微信极简风格 · 共 11 个页面</p>
+</div>
+
+<!-- ======================================================
+     第一行：首页 + 群面列表 + 群面详情
+     ====================================================== -->
+<div class="group-title">① 首页 &amp; 群面报名模块</div>
+<div class="screens-grid">
+
+  <!-- ===== 1. 首页 ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <span>●●●</span>
+          <span>WiFi</span>
+          <span>🔋</span>
+        </div>
+      </div>
+      <!-- 顶部导航 -->
+      <div class="nav-bar">
+        <div class="nav-back"></div>
+        <div class="nav-title">劲面仔</div>
+        <div class="nav-right"><span>⋯</span></div>
+      </div>
+      <div class="content">
+        <!-- Hero -->
+        <div class="home-hero">
+          <div class="home-hero-tag">🎯 求职加速器</div>
+          <h2>群面 · 单面 · 案例<br>一站式斩获 Offer</h2>
+          <p>专业导师 · 真实模拟 · 高效提升</p>
+          <div class="home-stats">
+            <div class="home-stat">
+              <div class="num">1,200+</div>
+              <div class="label">成功案例</div>
+            </div>
+            <div class="home-stat">
+              <div class="num">98%</div>
+              <div class="label">好评率</div>
+            </div>
+            <div class="home-stat">
+              <div class="num">50+</div>
+              <div class="label">资深导师</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 快捷入口 -->
+        <div class="quick-entry-grid">
+          <div class="quick-entry">
+            <div class="quick-icon-wrap green">🎤</div>
+            <div class="quick-entry-label">群面报名</div>
+          </div>
+          <div class="quick-entry">
+            <div class="quick-icon-wrap blue">👨‍🏫</div>
+            <div class="quick-entry-label">师资介绍</div>
+          </div>
+          <div class="quick-entry">
+            <div class="quick-icon-wrap orange">🏆</div>
+            <div class="quick-entry-label">案例展示</div>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <!-- 最新场次 -->
+        <div class="section-header">
+          <div class="section-title">🔥 近期群面场次</div>
+          <div class="section-more">查看全部 ›</div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-dot"></div>
+          <div class="preview-info">
+            <div class="title">腾讯产品经理模拟群面</div>
+            <div class="meta">4月2日 14:00 · 还剩 2 席</div>
+          </div>
+          <div class="preview-btn">报名</div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-dot" style="background:#faad14"></div>
+          <div class="preview-info">
+            <div class="title">字节跳动运营岗专场</div>
+            <div class="meta">4月5日 10:00 · 还剩 4 席</div>
+          </div>
+          <div class="preview-btn">报名</div>
+        </div>
+        <div class="preview-card">
+          <div class="preview-dot" style="background:#ccc"></div>
+          <div class="preview-info">
+            <div class="title">阿里巴巴商业化产品专场</div>
+            <div class="meta">4月8日 15:00 · 已满员</div>
+          </div>
+          <div class="preview-btn" style="background:#f0f0f0;color:#999">已满</div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <!-- 精选导师 -->
+        <div class="section-header">
+          <div class="section-title">⭐ 精选导师</div>
+          <div class="section-more">查看全部 ›</div>
+        </div>
+        <div style="display:flex;gap:0;padding:0 16px 16px;overflow-x:auto">
+          <div style="flex-shrink:0;width:120px;background:#fff;border-radius:12px;padding:14px 10px;text-align:center;margin-right:10px">
+            <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#07c160,#05a050);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin:0 auto 8px">陈</div>
+            <div style="font-size:13px;font-weight:600;color:#111">陈明辉</div>
+            <div style="font-size:11px;color:#07c160;margin-top:3px">腾讯 · PM</div>
+            <div style="font-size:11px;color:#f5222d;margin-top:6px;font-weight:600">¥299<span style="font-size:10px;color:#999;font-weight:400">/次</span></div>
+          </div>
+          <div style="flex-shrink:0;width:120px;background:#fff;border-radius:12px;padding:14px 10px;text-align:center;margin-right:10px">
+            <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#1677ff,#0958d9);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin:0 auto 8px">林</div>
+            <div style="font-size:13px;font-weight:600;color:#111">林晓雯</div>
+            <div style="font-size:11px;color:#1677ff;margin-top:3px">字节 · 运营</div>
+            <div style="font-size:11px;color:#f5222d;margin-top:6px;font-weight:600">¥259<span style="font-size:10px;color:#999;font-weight:400">/次</span></div>
+          </div>
+          <div style="flex-shrink:0;width:120px;background:#fff;border-radius:12px;padding:14px 10px;text-align:center;margin-right:10px">
+            <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#fa8c16,#d46b08);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin:0 auto 8px">王</div>
+            <div style="font-size:13px;font-weight:600;color:#111">王佳豪</div>
+            <div style="font-size:11px;color:#fa8c16;margin-top:3px">阿里 · 商业化</div>
+            <div style="font-size:11px;color:#f5222d;margin-top:6px;font-weight:600">¥329<span style="font-size:10px;color:#999;font-weight:400">/次</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <div class="tab-icon">🏠</div>
+          <div class="tab-text" style="color:#07c160">首页</div>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon">🎤</div>
+          <div class="tab-text">群面</div>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon">👨‍🏫</div>
+          <div class="tab-text">师资</div>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon">🏆</div>
+          <div class="tab-text">案例</div>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon">👤</div>
+          <div class="tab-text">我的</div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 1 · 首页</strong>首屏概览 · 快捷入口 · 近期场次</div>
+  </div>
+
+  <!-- ===== 2. 群面场次列表 ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back"></div>
+        <div class="nav-title">群面报名</div>
+        <div class="nav-right"><span style="font-size:16px;color:#07c160">筛选</span></div>
+      </div>
+
+      <!-- 筛选 tab -->
+      <div style="background:#fff;padding:12px 16px;display:flex;gap:8px;border-bottom:0.5px solid #e5e5e5">
+        <div class="filter-chip active">全部</div>
+        <div class="filter-chip">招募中</div>
+        <div class="filter-chip">已确认</div>
+        <div class="filter-chip">产品经理</div>
+        <div class="filter-chip">运营</div>
+      </div>
+
+      <div class="content">
+        <div style="height:12px"></div>
+
+        <!-- 场次卡片 1：招募中，已有3人 -->
+        <div class="session-card">
+          <div class="session-tag recruiting">● 招募中</div>
+          <div class="session-name">腾讯产品经理模拟群面</div>
+          <div class="session-meta-row">
+            <div class="session-meta-item"><span class="session-meta-icon">📅</span>4月2日（周三）14:00–16:00</div>
+            <div class="session-meta-item"><span class="session-meta-icon">🎯</span>目标岗位：产品经理</div>
+            <div class="session-meta-item"><span class="session-meta-icon">🏢</span>目标公司：腾讯</div>
+            <div class="session-meta-item"><span class="session-meta-icon">📍</span>线上（腾讯会议）</div>
+          </div>
+          <div class="session-progress">
+            <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
+            <div class="progress-text">3/6人 · 还差1人成团</div>
+          </div>
+          <div class="session-footer">
+            <div class="seat-avatars">
+              <div class="seat-avatar">张</div>
+              <div class="seat-avatar">李</div>
+              <div class="seat-avatar">王</div>
+              <div class="seat-empty">+</div>
+              <div class="seat-empty">+</div>
+              <div class="seat-empty">+</div>
+            </div>
+            <button class="enroll-btn">¥99 立即报名</button>
+          </div>
+        </div>
+
+        <!-- 场次卡片 2：已确认 -->
+        <div class="session-card" style="border-left-color: #1677ff">
+          <div class="session-tag confirmed">✓ 群面已确认</div>
+          <div class="session-name">字节跳动运营岗专场</div>
+          <div class="session-meta-row">
+            <div class="session-meta-item"><span class="session-meta-icon">📅</span>4月5日（周六）10:00–12:00</div>
+            <div class="session-meta-item"><span class="session-meta-icon">🎯</span>目标岗位：商业化运营</div>
+            <div class="session-meta-item"><span class="session-meta-icon">🏢</span>目标公司：字节跳动</div>
+            <div class="session-meta-item"><span class="session-meta-icon">📍</span>线上（飞书会议）</div>
+          </div>
+          <div class="session-progress">
+            <div class="progress-track"><div class="progress-fill" style="width:66%;background:#1677ff"></div></div>
+            <div class="progress-text">4/6人 · 群面已成团✓</div>
+          </div>
+          <div class="session-footer">
+            <div class="seat-avatars">
+              <div class="seat-avatar" style="background:#e8f2fe;color:#1677ff">赵</div>
+              <div class="seat-avatar" style="background:#e8f2fe;color:#1677ff">周</div>
+              <div class="seat-avatar" style="background:#e8f2fe;color:#1677ff">刘</div>
+              <div class="seat-avatar" style="background:#e8f2fe;color:#1677ff">陈</div>
+              <div class="seat-empty">+</div>
+              <div class="seat-empty">+</div>
+            </div>
+            <button class="enroll-btn">¥99 立即报名</button>
+          </div>
+        </div>
+
+        <!-- 场次卡片 3：已满员 -->
+        <div class="session-card" style="border-left-color: #d9d9d9">
+          <div class="session-tag full">■ 已满员</div>
+          <div class="session-name">阿里巴巴商业化产品专场</div>
+          <div class="session-meta-row">
+            <div class="session-meta-item"><span class="session-meta-icon">📅</span>4月8日（周二）15:00–17:00</div>
+            <div class="session-meta-item"><span class="session-meta-icon">🎯</span>目标岗位：商业化产品</div>
+            <div class="session-meta-item"><span class="session-meta-icon">🏢</span>目标公司：阿里巴巴</div>
+            <div class="session-meta-item"><span class="session-meta-icon">📍</span>线上（钉钉会议）</div>
+          </div>
+          <div class="session-progress">
+            <div class="progress-track"><div class="progress-fill danger" style="width:100%"></div></div>
+            <div class="progress-text">6/6人 · 已满员</div>
+          </div>
+          <div class="session-footer">
+            <div class="seat-avatars">
+              <div class="seat-avatar" style="background:#f5f5f5;color:#999">A</div>
+              <div class="seat-avatar" style="background:#f5f5f5;color:#999">B</div>
+              <div class="seat-avatar" style="background:#f5f5f5;color:#999">C</div>
+              <div class="seat-avatar" style="background:#f5f5f5;color:#999">D</div>
+              <div class="seat-avatar" style="background:#f5f5f5;color:#999">E</div>
+              <div class="seat-avatar" style="background:#f5f5f5;color:#999">F</div>
+            </div>
+            <button class="enroll-btn disabled">已满员</button>
+          </div>
+        </div>
+
+        <!-- 场次卡片 4：招募中仅1人 -->
+        <div class="session-card">
+          <div class="session-tag recruiting">● 招募中</div>
+          <div class="session-name">京东校招产品经理专场</div>
+          <div class="session-meta-row">
+            <div class="session-meta-item"><span class="session-meta-icon">📅</span>4月12日（周六）14:00–16:00</div>
+            <div class="session-meta-item"><span class="session-meta-icon">🎯</span>目标岗位：产品经理</div>
+            <div class="session-meta-item"><span class="session-meta-icon">🏢</span>目标公司：京东</div>
+            <div class="session-meta-item"><span class="session-meta-icon">📍</span>线上（微信视频号）</div>
+          </div>
+          <div class="session-progress">
+            <div class="progress-track"><div class="progress-fill warning" style="width:17%"></div></div>
+            <div class="progress-text">1/6人 · 还差3人成团</div>
+          </div>
+          <div class="session-footer">
+            <div class="seat-avatars">
+              <div class="seat-avatar">吴</div>
+              <div class="seat-empty">+</div>
+              <div class="seat-empty">+</div>
+              <div class="seat-empty">+</div>
+              <div class="seat-empty">+</div>
+              <div class="seat-empty">+</div>
+            </div>
+            <button class="enroll-btn">¥99 立即报名</button>
+          </div>
+        </div>
+
+        <div style="height:16px"></div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="tab-item"><div class="tab-icon">🏠</div><div class="tab-text">首页</div></div>
+        <div class="tab-item active"><div class="tab-icon">🎤</div><div class="tab-text" style="color:#07c160">群面</div></div>
+        <div class="tab-item"><div class="tab-icon">👨‍🏫</div><div class="tab-text">师资</div></div>
+        <div class="tab-item"><div class="tab-icon">🏆</div><div class="tab-text">案例</div></div>
+        <div class="tab-item"><div class="tab-icon">👤</div><div class="tab-text">我的</div></div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 2 · 群面场次列表</strong>按状态筛选 · 人数进度 · 座位可视化</div>
+  </div>
+
+  <!-- ===== 3. 群面详情/报名页 ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back" style="font-size:16px;color:#07c160">‹ 返回</div>
+        <div class="nav-title">群面详情</div>
+        <div class="nav-right"><span style="font-size:18px;color:#07c160">↑</span></div>
+      </div>
+      <div class="content">
+        <!-- 详情 Hero -->
+        <div class="detail-hero">
+          <div class="detail-tag">● 招募中</div>
+          <div class="detail-title">腾讯产品经理模拟群面</div>
+          <div class="detail-meta-grid">
+            <div class="detail-meta-item">
+              <div class="key">📅 群面时间</div>
+              <div class="val">4月2日 14:00</div>
+            </div>
+            <div class="detail-meta-item">
+              <div class="key">⏱ 时长</div>
+              <div class="val">约 2 小时</div>
+            </div>
+            <div class="detail-meta-item">
+              <div class="key">🎯 目标岗位</div>
+              <div class="val">产品经理</div>
+            </div>
+            <div class="detail-meta-item">
+              <div class="key">🏢 目标公司</div>
+              <div class="val">腾讯</div>
+            </div>
+          </div>
+          <!-- 进度条 -->
+          <div style="background:#f7f7f7;border-radius:8px;padding:10px 12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:12px;color:#555">报名进度</span>
+              <span style="font-size:12px;font-weight:600;color:#07c160">3/6人 · 还差1人成团</span>
+            </div>
+            <div class="progress-track" style="height:8px">
+              <div class="progress-fill" style="width:50%"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:6px">
+              <span style="font-size:11px;color:#999">当前3人已报名</span>
+              <span style="font-size:11px;color:#07c160">达4人即开班</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 主持导师 -->
+        <div class="detail-section">
+          <div class="detail-section-title">主持导师</div>
+          <div style="display:flex;align-items:center;gap:12px;background:#f7f7f7;border-radius:10px;padding:12px">
+            <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#07c160,#05a050);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0">陈</div>
+            <div style="flex:1">
+              <div style="font-size:14px;font-weight:600;color:#111">陈明辉</div>
+              <div style="font-size:12px;color:#07c160;margin-top:2px">腾讯高级产品经理 · 3年面试官经验</div>
+            </div>
+            <div style="font-size:12px;color:#999">查看详情 ›</div>
+          </div>
+        </div>
+
+        <!-- 已报名成员 -->
+        <div class="detail-section" style="margin-top:16px">
+          <div class="detail-section-title">当前成员（3/6）</div>
+          <div class="member-list">
+            <div class="member-item">
+              <div class="member-avatar">张</div>
+              <div><div class="member-name">张同学</div><div class="member-desc">应届 · 产品方向</div></div>
+            </div>
+            <div class="member-item">
+              <div class="member-avatar">李</div>
+              <div><div class="member-name">李同学</div><div class="member-desc">1年工作经验 · 互联网运营转产品</div></div>
+            </div>
+            <div class="member-item">
+              <div class="member-avatar">王</div>
+              <div><div class="member-name">王同学</div><div class="member-desc">应届 · 商科背景</div></div>
+            </div>
+            <div class="member-item member-slot">
+              <div class="member-avatar" style="background:#f0f0f0;color:#ccc">+</div>
+              <div><div class="member-name" style="color:#ccc">空位 · 等待报名</div><div class="member-desc" style="color:#ddd">剩余3席</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 注意事项 -->
+        <div class="notice-box" style="margin:16px">
+          <div class="notice-title">⚠️ 报名须知</div>
+          <ul>
+            <li>人数达到 4 人后群面确认，不足则退款</li>
+            <li>请在开始前 30 分钟进入会议室</li>
+            <li>本次为模拟面试，请提前准备简历</li>
+            <li>报名成功后不支持退款（满员场次）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="bottom-bar">
+        <div class="price-area">
+          <div class="price">¥99</div>
+          <div class="price-label">含导师点评反馈</div>
+        </div>
+        <div class="confirm-btn">立即报名</div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 3 · 群面详情 &amp; 报名</strong>场次信息 · 成员进度 · 支付确认</div>
+  </div>
+
+</div><!-- end screens-grid row 1 -->
+
+<!-- ======================================================
+     第二行：师资列表 + 单面预约时间 + 案例展示
+     ====================================================== -->
+<div class="group-title">② 师资介绍 &amp; 案例展示模块</div>
+<div class="screens-grid">
+
+  <!-- ===== 4. 师资介绍列表 ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back"></div>
+        <div class="nav-title">师资介绍</div>
+        <div class="nav-right"></div>
+      </div>
+
+      <!-- 筛选标签 -->
+      <div style="background:#fff;padding:12px 16px;display:flex;gap:8px;border-bottom:0.5px solid #e5e5e5;overflow-x:auto">
+        <div class="filter-chip active">全部导师</div>
+        <div class="filter-chip">产品经理</div>
+        <div class="filter-chip">运营</div>
+        <div class="filter-chip">商业化</div>
+        <div class="filter-chip">大厂背景</div>
+      </div>
+
+      <div class="content">
+        <div style="height:12px"></div>
+
+        <!-- 导师卡片 1 -->
+        <div class="teacher-card">
+          <div class="teacher-avatar av1">陈</div>
+          <div class="teacher-info">
+            <div class="teacher-name">陈明辉</div>
+            <div class="teacher-title">🟢 腾讯 · 高级产品经理</div>
+            <div class="teacher-desc">6年产品经验，主导微信多个核心功能迭代，担任腾讯校招面试官3年，辅导超过200名学员成功拿到互联网产品offer。</div>
+            <div class="teacher-tags">
+              <span class="teacher-tag">微信产品</span>
+              <span class="teacher-tag">to C产品</span>
+              <span class="teacher-tag">校招辅导</span>
+            </div>
+            <div class="teacher-footer">
+              <div class="teacher-price">¥299 <span>/ 次（60分钟）</span></div>
+              <div class="book-btn">发起单面</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 导师卡片 2 -->
+        <div class="teacher-card">
+          <div class="teacher-avatar av2">林</div>
+          <div class="teacher-info">
+            <div class="teacher-name">林晓雯</div>
+            <div class="teacher-title">🔵 字节跳动 · 商业化运营专家</div>
+            <div class="teacher-desc">5年字节内容运营经验，深耕抖音商业化领域，擅长帮助应届生打磨项目经历和面试思路，百余名学员成功斩获字节/快手offer。</div>
+            <div class="teacher-tags">
+              <span class="teacher-tag">商业化运营</span>
+              <span class="teacher-tag">内容运营</span>
+              <span class="teacher-tag">面经辅导</span>
+            </div>
+            <div class="teacher-footer">
+              <div class="teacher-price">¥259 <span>/ 次（60分钟）</span></div>
+              <div class="book-btn">发起单面</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 导师卡片 3 -->
+        <div class="teacher-card">
+          <div class="teacher-avatar av3">王</div>
+          <div class="teacher-info">
+            <div class="teacher-name">王佳豪</div>
+            <div class="teacher-title">🟠 阿里巴巴 · 国际商业化产品总监</div>
+            <div class="teacher-desc">8年阿里国际商业化产品经验，历经AIDC多个核心项目，擅长to B产品方向，尤其擅长广告产品和出海场景面试辅导。</div>
+            <div class="teacher-tags">
+              <span class="teacher-tag">to B产品</span>
+              <span class="teacher-tag">广告产品</span>
+              <span class="teacher-tag">出海经验</span>
+            </div>
+            <div class="teacher-footer">
+              <div class="teacher-price">¥329 <span>/ 次（60分钟）</span></div>
+              <div class="book-btn">发起单面</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:16px"></div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="tab-item"><div class="tab-icon">🏠</div><div class="tab-text">首页</div></div>
+        <div class="tab-item"><div class="tab-icon">🎤</div><div class="tab-text">群面</div></div>
+        <div class="tab-item active"><div class="tab-icon">👨‍🏫</div><div class="tab-text" style="color:#07c160">师资</div></div>
+        <div class="tab-item"><div class="tab-icon">🏆</div><div class="tab-text">案例</div></div>
+        <div class="tab-item"><div class="tab-icon">👤</div><div class="tab-text">我的</div></div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 4 · 师资介绍列表</strong>导师卡片 · 分类筛选 · 一键发起单面</div>
+  </div>
+
+  <!-- ===== 5. 单面预约时间页 ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back" style="font-size:16px;color:#07c160">‹ 返回</div>
+        <div class="nav-title">预约单面</div>
+        <div class="nav-right"></div>
+      </div>
+      <div class="content">
+        <!-- 导师信息条 -->
+        <div class="booking-teacher">
+          <div class="booking-teacher-avatar">陈</div>
+          <div>
+            <div class="booking-teacher-name">陈明辉</div>
+            <div class="booking-teacher-title">腾讯 · 高级产品经理</div>
+          </div>
+          <div class="booking-teacher-price">¥299/次</div>
+        </div>
+
+        <!-- 日历区域 -->
+        <div class="calendar-section">
+          <div class="calendar-header">
+            <span class="arrow">‹</span>
+            <span class="month">2026年 4月</span>
+            <span class="arrow">›</span>
+          </div>
+          <div class="week-header">
+            <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+          </div>
+          <div class="calendar-grid">
+            <div class="cal-day empty"></div>
+            <div class="cal-day empty"></div>
+            <div class="cal-day disabled">1</div>
+            <div class="cal-day has-slot">2</div>
+            <div class="cal-day has-slot">3</div>
+            <div class="cal-day has-slot">4</div>
+            <div class="cal-day has-slot">5</div>
+            <div class="cal-day">6</div>
+            <div class="cal-day has-slot">7</div>
+            <div class="cal-day has-slot selected">8</div>
+            <div class="cal-day has-slot">9</div>
+            <div class="cal-day has-slot">10</div>
+            <div class="cal-day">11</div>
+            <div class="cal-day">12</div>
+            <div class="cal-day has-slot">13</div>
+            <div class="cal-day">14</div>
+            <div class="cal-day today">15</div>
+            <div class="cal-day has-slot">16</div>
+            <div class="cal-day has-slot">17</div>
+            <div class="cal-day">18</div>
+            <div class="cal-day">19</div>
+            <div class="cal-day has-slot">20</div>
+            <div class="cal-day has-slot">21</div>
+            <div class="cal-day">22</div>
+            <div class="cal-day">23</div>
+            <div class="cal-day">24</div>
+            <div class="cal-day">25</div>
+            <div class="cal-day">26</div>
+            <div class="cal-day">27</div>
+            <div class="cal-day">28</div>
+            <div class="cal-day">29</div>
+            <div class="cal-day">30</div>
+          </div>
+          <div style="display:flex;gap:16px;margin-top:12px;font-size:11px;color:#999">
+            <span>●<span style="margin-left:4px">有空位</span></span>
+            <span style="color:#07c160;font-weight:600">●<span style="margin-left:4px;color:#555">已选</span></span>
+          </div>
+        </div>
+
+        <div class="spacer-8"></div>
+
+        <!-- 时间段选择 -->
+        <div class="timeslot-section">
+          <div class="timeslot-title">4月8日（周二）可预约时段</div>
+          <div class="timeslot-grid">
+            <div class="timeslot booked">
+              <div class="time">09:00</div>
+              <div class="slot-tag">已预约</div>
+            </div>
+            <div class="timeslot booked">
+              <div class="time">10:00</div>
+              <div class="slot-tag">已预约</div>
+            </div>
+            <div class="timeslot">
+              <div class="time">11:00</div>
+              <div class="slot-tag">可预约</div>
+            </div>
+            <div class="timeslot selected">
+              <div class="time">14:00</div>
+              <div class="slot-tag" style="color:#07c160">已选择</div>
+            </div>
+            <div class="timeslot">
+              <div class="time">15:00</div>
+              <div class="slot-tag">可预约</div>
+            </div>
+            <div class="timeslot">
+              <div class="time">16:00</div>
+              <div class="slot-tag">可预约</div>
+            </div>
+            <div class="timeslot booked">
+              <div class="time">19:00</div>
+              <div class="slot-tag">已预约</div>
+            </div>
+            <div class="timeslot">
+              <div class="time">20:00</div>
+              <div class="slot-tag">可预约</div>
+            </div>
+            <div class="timeslot">
+              <div class="time">21:00</div>
+              <div class="slot-tag">可预约</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spacer-8"></div>
+
+        <!-- 备注 -->
+        <div style="background:#fff;padding:16px">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:10px">备注给导师（选填）</div>
+          <div style="background:#f7f7f7;border-radius:8px;padding:12px;font-size:13px;color:#ccc;height:72px">如：希望重点练习结构化思维 / 有3年运营经验...</div>
+        </div>
+
+        <div style="height:16px"></div>
+      </div>
+      <div class="bottom-bar">
+        <div class="price-area">
+          <div class="price">¥299</div>
+          <div class="price-label">4月8日 14:00</div>
+        </div>
+        <div class="confirm-btn">确认预约并支付</div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 5 · 单面预约时间</strong>日历选日期 · 时段选择 · 支付确认</div>
+  </div>
+
+  <!-- ===== 6. 案例展示 ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back"></div>
+        <div class="nav-title">成功案例</div>
+        <div class="nav-right"></div>
+      </div>
+      <!-- 筛选 -->
+      <div class="case-filter">
+        <div class="filter-chip active">全部</div>
+        <div class="filter-chip">腾讯</div>
+        <div class="filter-chip">字节跳动</div>
+        <div class="filter-chip">阿里</div>
+        <div class="filter-chip">产品经理</div>
+        <div class="filter-chip">运营</div>
+      </div>
+
+      <div class="content">
+        <!-- 数据汇总 -->
+        <div style="background:#fff;display:flex;padding:16px;gap:0;border-bottom:0.5px solid #f0f0f0;margin-bottom:8px">
+          <div style="flex:1;text-align:center">
+            <div style="font-size:22px;font-weight:700;color:#07c160">1,200+</div>
+            <div style="font-size:11px;color:#999;margin-top:3px">辅导成功</div>
+          </div>
+          <div style="flex:1;text-align:center;border-left:1px solid #f0f0f0">
+            <div style="font-size:22px;font-weight:700;color:#111">50+</div>
+            <div style="font-size:11px;color:#999;margin-top:3px">合作导师</div>
+          </div>
+          <div style="flex:1;text-align:center;border-left:1px solid #f0f0f0">
+            <div style="font-size:22px;font-weight:700;color:#111">98%</div>
+            <div style="font-size:11px;color:#999;margin-top:3px">好评率</div>
+          </div>
+        </div>
+
+        <div class="case-list">
+          <!-- 案例 1 -->
+          <div class="case-card">
+            <div class="case-card-img bg1">
+              🎉
+              <div class="case-img-badge">Offer 达成</div>
+            </div>
+            <div class="case-card-body">
+              <div class="case-company">腾讯 · 产品经理</div>
+              <div class="case-title">应届生 3 轮面试全过，斩获腾讯 PCG 产品 Offer</div>
+              <div class="case-desc">从0面试经验到3周内通过腾讯3轮面试，导师帮我梳理了所有项目亮点，模拟了结构化面试的完整流程。</div>
+              <div class="case-footer">
+                <div class="case-avatar">小</div>
+                <div class="case-user">小雅同学 · 应届生</div>
+                <div class="case-tags">
+                  <div class="case-tag">群面</div>
+                  <div class="case-tag">单面</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 案例 2 -->
+          <div class="case-card">
+            <div class="case-card-img bg2">
+              🚀
+              <div class="case-img-badge" style="background:#1677ff">转型成功</div>
+            </div>
+            <div class="case-card-body">
+              <div class="case-company" style="color:#1677ff">字节跳动 · 商业化运营</div>
+              <div class="case-title">运营转产品，成功拿下字节商业化运营 Offer</div>
+              <div class="case-desc">有3年运营经验但不知道如何包装，经过2次单面模拟+导师的简历改造，成功收到飞书团队的offer。</div>
+              <div class="case-footer">
+                <div class="case-avatar" style="background:#e8f2fe;color:#1677ff">阿</div>
+                <div class="case-user">阿杰同学 · 3年经验</div>
+                <div class="case-tags">
+                  <div class="case-tag">单面</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 案例 3 -->
+          <div class="case-card">
+            <div class="case-card-img bg3">
+              💼
+              <div class="case-img-badge" style="background:#fa8c16">海外 Offer</div>
+            </div>
+            <div class="case-card-body">
+              <div class="case-company" style="color:#fa8c16">阿里国际 · 商业化产品</div>
+              <div class="case-title">港硕应届生拿下阿里 AIDC 商业化产品经理 Offer</div>
+              <div class="case-desc">毕业于香港大学，通过劲面仔的出海专场群面+王老师单面辅导，精准理解阿里国际业务面试逻辑，顺利上岸。</div>
+              <div class="case-footer">
+                <div class="case-avatar" style="background:#fff3e8;color:#fa8c16">薇</div>
+                <div class="case-user">薇薇同学 · 港硕应届</div>
+                <div class="case-tags">
+                  <div class="case-tag">群面</div>
+                  <div class="case-tag">单面</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="tab-item"><div class="tab-icon">🏠</div><div class="tab-text">首页</div></div>
+        <div class="tab-item"><div class="tab-icon">🎤</div><div class="tab-text">群面</div></div>
+        <div class="tab-item"><div class="tab-icon">👨‍🏫</div><div class="tab-text">师资</div></div>
+        <div class="tab-item active"><div class="tab-icon">🏆</div><div class="tab-text" style="color:#07c160">案例</div></div>
+        <div class="tab-item"><div class="tab-icon">👤</div><div class="tab-text">我的</div></div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 6 · 案例展示</strong>历史成功案例 · 公司/岗位筛选 · 数据汇总</div>
+  </div>
+
+  <!-- ===== 7. 案例截图模拟 ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back" style="font-size:16px;color:#07c160">‹ 返回</div>
+        <div class="nav-title">成功案例详情</div>
+        <div class="nav-right"><span style="font-size:18px;color:#07c160">↑</span></div>
+      </div>
+      <div class="content">
+        <!-- 学员信息 -->
+        <div style="background:#fff;padding:16px;border-bottom:0.5px solid #e5e5e5">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#07c160,#05a050);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0">小</div>
+            <div>
+              <div style="font-size:15px;font-weight:600;color:#111">小雅同学</div>
+              <div style="font-size:12px;color:#999;margin-top:3px">香港大学 · 商业分析硕士 · 应届生</div>
+            </div>
+            <div style="margin-left:auto;background:#e8f8ef;color:#07c160;font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px">已上岸 ✓</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div style="background:#f5f5f5;font-size:12px;color:#555;padding:4px 10px;border-radius:4px">腾讯 PCG 产品经理</div>
+            <div style="background:#f5f5f5;font-size:12px;color:#555;padding:4px 10px;border-radius:4px">群面 + 单面辅导</div>
+            <div style="background:#f5f5f5;font-size:12px;color:#555;padding:4px 10px;border-radius:4px">3 周上岸</div>
+          </div>
+        </div>
+
+        <div style="padding:14px 16px 0;font-size:13px;font-weight:600;color:#666">截图证明</div>
+
+        <!-- Offer 截图 mock -->
+        <div class="offer-screenshot" style="margin-top:10px">
+          <div class="screenshot-header offer">
+            <div style="font-size:14px;font-weight:700;color:#111;flex:1">腾讯 · Offer Letter</div>
+            <div style="font-size:11px;color:#999">2026-03-01</div>
+          </div>
+          <div class="offer-logo-area">
+            <div style="font-size:32px;margin-bottom:8px">🐧</div>
+            <div class="offer-company-name">腾讯科技（深圳）有限公司</div>
+            <div class="offer-text">恭喜您通过了 PCG 事业群产品经理岗位面试</div>
+            <div class="offer-highlight">正式录用通知</div>
+            <div class="offer-sub" style="margin-top:4px">入职日期：2026年7月1日</div>
+          </div>
+        </div>
+
+        <!-- 微信截图 mock -->
+        <div class="offer-screenshot" style="margin-top:12px">
+          <div class="screenshot-header wechat">
+            <div class="app-icon">💬</div>
+            <div>
+              <div class="app-name">微信</div>
+              <div class="app-sub">陈明辉导师</div>
+            </div>
+          </div>
+          <div class="screenshot-body">
+            <div class="chat-bubble">小雅你好！我刚刚看到消息，恭喜你通过了腾讯的面试！你在结构化表达和场景分析方面进步非常大 🎉</div>
+            <div style="height:8px"></div>
+            <div class="chat-bubble right">谢谢陈老师！！！太开心了，没有你的帮助真的不可能这么顺利！</div>
+          </div>
+        </div>
+
+        <!-- 学员感言 -->
+        <div style="margin:12px 16px;background:#fff;border-radius:12px;padding:14px">
+          <div style="font-size:13px;font-weight:600;color:#111;margin-bottom:8px">学员感言</div>
+          <div style="font-size:13px;color:#555;line-height:1.8">
+            "劲面仔的群面帮我找到了面试的感觉，和其他同学一起模拟真的很锻炼人。后来单独和陈老师做了2次单面，他非常有针对性地帮我打磨了产品思路的表达方式。强烈推荐！"
+          </div>
+          <div style="font-size:11px;color:#999;margin-top:8px">— 小雅 · 2026年3月</div>
+        </div>
+
+        <div style="height:16px"></div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item"><div class="tab-icon">🏠</div><div class="tab-text">首页</div></div>
+        <div class="tab-item"><div class="tab-icon">🎤</div><div class="tab-text">群面</div></div>
+        <div class="tab-item"><div class="tab-icon">👨‍🏫</div><div class="tab-text">师资</div></div>
+        <div class="tab-item active"><div class="tab-icon">🏆</div><div class="tab-text" style="color:#07c160">案例</div></div>
+        <div class="tab-item"><div class="tab-icon">👤</div><div class="tab-text">我的</div></div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 7 · 案例详情</strong>Offer截图 · 微信对话 · 学员感言</div>
+  </div>
+
+</div><!-- end screens-grid row 2 -->
+
+<!-- ======================================================
+     第三行：报名提交简历 + 「我的」模块（4 个页面）
+     ====================================================== -->
+<div class="group-title">③ 报名流程 · 简历提交 &amp; 「我的」模块</div>
+<div class="screens-grid">
+
+  <!-- ===== 8. 报名 - 提交简历（群面/单面通用） ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back" style="font-size:16px;color:#07c160">‹ 返回</div>
+        <div class="nav-title">确认报名</div>
+        <div class="nav-right"></div>
+      </div>
+      <div class="content white-bg">
+
+        <!-- 步骤条 -->
+        <div style="padding:16px 16px 0;display:flex;align-items:center;gap:0">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:24px;height:24px;border-radius:50%;background:#07c160;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">1</div>
+            <div style="font-size:10px;color:#07c160;font-weight:600">选场次</div>
+          </div>
+          <div style="flex:1;height:2px;background:#07c160;margin-bottom:16px"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:24px;height:24px;border-radius:50%;background:#07c160;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">2</div>
+            <div style="font-size:10px;color:#07c160;font-weight:600">提交简历</div>
+          </div>
+          <div style="flex:1;height:2px;background:#e5e5e5;margin-bottom:16px"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:24px;height:24px;border-radius:50%;background:#e5e5e5;color:#999;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">3</div>
+            <div style="font-size:10px;color:#999">支付</div>
+          </div>
+          <div style="flex:1;height:2px;background:#e5e5e5;margin-bottom:16px"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:24px;height:24px;border-radius:50%;background:#e5e5e5;color:#999;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">4</div>
+            <div style="font-size:10px;color:#999">完成</div>
+          </div>
+        </div>
+
+        <!-- 场次摘要 -->
+        <div style="margin:16px;background:#f7f7f7;border-radius:10px;padding:12px 14px">
+          <div style="font-size:11px;color:#999;margin-bottom:6px">报名场次</div>
+          <div style="font-size:14px;font-weight:600;color:#111">腾讯产品经理模拟群面</div>
+          <div style="font-size:12px;color:#666;margin-top:4px">4月2日（周三）14:00–16:00 · ¥99</div>
+        </div>
+
+        <div style="height:1px;background:#f0f0f0"></div>
+
+        <!-- 简历模块 -->
+        <div style="padding:16px">
+          <div style="font-size:15px;font-weight:600;color:#111;margin-bottom:4px">📄 提交简历</div>
+          <div style="font-size:12px;color:#999;margin-bottom:16px">导师会在面试前查阅你的简历，以便针对性辅导</div>
+
+          <!-- 已有简历 -->
+          <div style="background:#f7f7f7;border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="width:40px;height:48px;background:#fff;border-radius:6px;border:1px solid #e5e5e5;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📄</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600;color:#111">我的简历_2026.pdf</div>
+              <div style="font-size:11px;color:#999;margin-top:3px">2.3 MB · 上次更新 3月20日</div>
+            </div>
+            <div style="font-size:12px;color:#07c160;font-weight:500">使用此简历</div>
+          </div>
+
+          <!-- 上传新简历 -->
+          <div style="border:1.5px dashed #d9d9d9;border-radius:10px;padding:20px;text-align:center;cursor:pointer">
+            <div style="font-size:28px;margin-bottom:6px">⬆️</div>
+            <div style="font-size:13px;color:#555;font-weight:500">上传新简历</div>
+            <div style="font-size:11px;color:#999;margin-top:4px">支持 PDF / Word，最大 10MB</div>
+          </div>
+        </div>
+
+        <div style="height:1px;background:#f0f0f0"></div>
+
+        <!-- 个人信息确认 -->
+        <div style="padding:16px">
+          <div style="font-size:15px;font-weight:600;color:#111;margin-bottom:12px">👤 个人信息</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="font-size:13px;color:#999;width:56px;flex-shrink:0">姓名</div>
+              <div style="flex:1;font-size:13px;color:#111">曾柳青</div>
+              <div style="font-size:12px;color:#07c160">修改</div>
+            </div>
+            <div style="height:0.5px;background:#f0f0f0"></div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="font-size:13px;color:#999;width:56px;flex-shrink:0">应届/社招</div>
+              <div style="flex:1;font-size:13px;color:#111">应届生</div>
+              <div style="font-size:12px;color:#07c160">修改</div>
+            </div>
+            <div style="height:0.5px;background:#f0f0f0"></div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="font-size:13px;color:#999;width:56px;flex-shrink:0">目标方向</div>
+              <div style="flex:1;font-size:13px;color:#111">产品经理</div>
+              <div style="font-size:12px;color:#07c160">修改</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:16px"></div>
+      </div>
+      <div class="bottom-bar">
+        <div class="price-area">
+          <div class="price">¥99</div>
+          <div class="price-label">腾讯产品经理群面</div>
+        </div>
+        <div class="confirm-btn">下一步：去支付</div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 8 · 报名提交简历</strong>步骤条 · 选择/上传简历 · 个人信息确认</div>
+  </div>
+
+  <!-- ===== 9. 「我的」主页 ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back"></div>
+        <div class="nav-title">我的</div>
+        <div class="nav-right"><span style="font-size:18px;color:#07c160">⚙</span></div>
+      </div>
+      <div class="content">
+
+        <!-- 用户信息卡 -->
+        <div style="background:#fff;padding:20px 16px 16px;border-bottom:0.5px solid #e5e5e5">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+            <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#07c160,#05a050);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;flex-shrink:0">曾</div>
+            <div style="flex:1">
+              <div style="font-size:18px;font-weight:700;color:#111">曾柳青</div>
+              <div style="font-size:12px;color:#999;margin-top:4px">应届生 · 产品经理方向</div>
+              <div style="display:flex;gap:6px;margin-top:6px">
+                <div style="background:#e8f8ef;color:#07c160;font-size:11px;padding:2px 8px;border-radius:4px">港硕</div>
+                <div style="background:#f5f5f5;color:#555;font-size:11px;padding:2px 8px;border-radius:4px">深圳</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:#07c160">编辑资料 ›</div>
+          </div>
+          <!-- 数据统计 -->
+          <div style="display:flex;gap:0;background:#f7f7f7;border-radius:10px;padding:12px 0">
+            <div style="flex:1;text-align:center">
+              <div style="font-size:18px;font-weight:700;color:#111">3</div>
+              <div style="font-size:11px;color:#999;margin-top:3px">群面场次</div>
+            </div>
+            <div style="flex:1;text-align:center;border-left:1px solid #e5e5e5">
+              <div style="font-size:18px;font-weight:700;color:#111">2</div>
+              <div style="font-size:11px;color:#999;margin-top:3px">单面次数</div>
+            </div>
+            <div style="flex:1;text-align:center;border-left:1px solid #e5e5e5">
+              <div style="font-size:18px;font-weight:700;color:#07c160">5</div>
+              <div style="font-size:11px;color:#07c160;margin-top:3px">面试总次数</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 简历管理入口 -->
+        <div style="background:#fff;margin-top:8px">
+          <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid #f5f5f5;cursor:pointer">
+            <div style="width:36px;height:36px;border-radius:10px;background:#e8f8ef;display:flex;align-items:center;justify-content:center;font-size:18px">📄</div>
+            <div style="flex:1">
+              <div style="font-size:14px;font-weight:500;color:#111">我的简历</div>
+              <div style="font-size:12px;color:#999;margin-top:2px">我的简历_2026.pdf · 3月20日更新</div>
+            </div>
+            <div style="font-size:18px;color:#ccc">›</div>
+          </div>
+        </div>
+
+        <!-- 面试记录入口 -->
+        <div style="background:#fff;margin-top:8px">
+          <div style="padding:12px 16px 0;font-size:12px;font-weight:600;color:#999;letter-spacing:0.5px">面试记录</div>
+          <div style="padding:0 16px">
+            <!-- 群面记录入口 -->
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:0.5px solid #f5f5f5;cursor:pointer">
+              <div style="width:36px;height:36px;border-radius:10px;background:#e8f8ef;display:flex;align-items:center;justify-content:center;font-size:18px">🎤</div>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:500;color:#111">群面记录</div>
+                <div style="font-size:12px;color:#999;margin-top:2px">共参加 3 场 · 查看全部</div>
+              </div>
+              <div style="background:#07c160;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-right:6px">3</div>
+              <div style="font-size:18px;color:#ccc">›</div>
+            </div>
+            <!-- 单面记录入口 -->
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 0;cursor:pointer">
+              <div style="width:36px;height:36px;border-radius:10px;background:#e8f2fe;display:flex;align-items:center;justify-content:center;font-size:18px">👨‍🏫</div>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:500;color:#111">单面记录</div>
+                <div style="font-size:12px;color:#999;margin-top:2px">共参加 2 次 · 查看全部</div>
+              </div>
+              <div style="background:#1677ff;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-right:6px">2</div>
+              <div style="font-size:18px;color:#ccc">›</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 其他功能 -->
+        <div style="background:#fff;margin-top:8px">
+          <div style="padding:12px 16px 0;font-size:12px;font-weight:600;color:#999;letter-spacing:0.5px">其他</div>
+          <div style="padding:0 16px">
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:0.5px solid #f5f5f5;cursor:pointer">
+              <div style="width:36px;height:36px;border-radius:10px;background:#fff3e8;display:flex;align-items:center;justify-content:center;font-size:18px">🎁</div>
+              <div style="flex:1;font-size:14px;font-weight:500;color:#111">邀请好友</div>
+              <div style="font-size:12px;color:#07c160;margin-right:6px">送50元券</div>
+              <div style="font-size:18px;color:#ccc">›</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:0.5px solid #f5f5f5;cursor:pointer">
+              <div style="width:36px;height:36px;border-radius:10px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:18px">💬</div>
+              <div style="flex:1;font-size:14px;font-weight:500;color:#111">联系客服</div>
+              <div style="font-size:18px;color:#ccc">›</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 0;cursor:pointer">
+              <div style="width:36px;height:36px;border-radius:10px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:18px">⚙️</div>
+              <div style="flex:1;font-size:14px;font-weight:500;color:#111">设置</div>
+              <div style="font-size:18px;color:#ccc">›</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:16px"></div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item"><div class="tab-icon">🏠</div><div class="tab-text">首页</div></div>
+        <div class="tab-item"><div class="tab-icon">🎤</div><div class="tab-text">群面</div></div>
+        <div class="tab-item"><div class="tab-icon">👨‍🏫</div><div class="tab-text">师资</div></div>
+        <div class="tab-item"><div class="tab-icon">🏆</div><div class="tab-text">案例</div></div>
+        <div class="tab-item active"><div class="tab-icon">👤</div><div class="tab-text" style="color:#07c160">我的</div></div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 9 · 「我的」主页</strong>用户信息 · 面试统计 · 简历入口 · 记录入口</div>
+  </div>
+
+  <!-- ===== 10. 历史面试记录列表（群面+单面 Tab） ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back" style="font-size:16px;color:#07c160">‹ 返回</div>
+        <div class="nav-title">面试记录</div>
+        <div class="nav-right"></div>
+      </div>
+
+      <!-- Tab 切换 -->
+      <div style="background:#fff;display:flex;border-bottom:0.5px solid #e5e5e5">
+        <div style="flex:1;text-align:center;padding:12px 0;font-size:14px;font-weight:600;color:#07c160;border-bottom:2px solid #07c160">群面（3）</div>
+        <div style="flex:1;text-align:center;padding:12px 0;font-size:14px;color:#999">单面（2）</div>
+      </div>
+
+      <div class="content">
+        <div style="height:12px"></div>
+
+        <!-- 群面记录卡 1：待开始 -->
+        <div style="background:#fff;border-radius:12px;margin:0 16px 12px;padding:14px;position:relative;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:#faad14;border-radius:3px 0 0 3px"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div style="display:inline-flex;align-items:center;gap:4px;background:#fffbe8;color:#faad14;font-size:11px;padding:2px 8px;border-radius:4px">⏳ 待开始</div>
+            <div style="font-size:12px;color:#999">4月5日 10:00</div>
+          </div>
+          <div style="font-size:15px;font-weight:600;color:#111;margin-bottom:6px">字节跳动运营岗专场</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px 12px;margin-bottom:10px">
+            <div style="font-size:12px;color:#666">🎯 商业化运营</div>
+            <div style="font-size:12px;color:#666">🏢 字节跳动</div>
+            <div style="font-size:12px;color:#666">👨‍🏫 林晓雯导师</div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:12px;color:#999">已报名 · 群面已确认（4人）</div>
+            <div style="background:#faad14;color:#fff;font-size:12px;font-weight:500;border-radius:6px;padding:5px 12px;cursor:pointer">进入会议</div>
+          </div>
+        </div>
+
+        <!-- 群面记录卡 2：已完成，有反馈 -->
+        <div style="background:#fff;border-radius:12px;margin:0 16px 12px;padding:14px;position:relative;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:#07c160;border-radius:3px 0 0 3px"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div style="display:inline-flex;align-items:center;gap:4px;background:#e8f8ef;color:#07c160;font-size:11px;padding:2px 8px;border-radius:4px">✓ 已完成</div>
+            <div style="font-size:12px;color:#999">3月22日 14:00</div>
+          </div>
+          <div style="font-size:15px;font-weight:600;color:#111;margin-bottom:6px">腾讯产品经理模拟群面</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px 12px;margin-bottom:10px">
+            <div style="font-size:12px;color:#666">🎯 产品经理</div>
+            <div style="font-size:12px;color:#666">🏢 腾讯</div>
+            <div style="font-size:12px;color:#666">👨‍🏫 陈明辉导师</div>
+          </div>
+          <!-- 有面试反馈 -->
+          <div style="background:#f7f7f7;border-radius:8px;padding:10px 12px;margin-bottom:10px">
+            <div style="font-size:11px;color:#07c160;font-weight:600;margin-bottom:4px">📝 导师反馈已出</div>
+            <div style="font-size:12px;color:#555;line-height:1.6">结构化表达清晰，但逻辑推演部分可以更严密。建议...</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <div style="flex:1;text-align:center;border:1px solid #e5e5e5;border-radius:6px;padding:6px;font-size:12px;color:#555;cursor:pointer">查看完整反馈</div>
+            <div style="flex:1;text-align:center;border:1px solid #e5e5e5;border-radius:6px;padding:6px;font-size:12px;color:#555;cursor:pointer">▶ 播放录屏</div>
+          </div>
+        </div>
+
+        <!-- 群面记录卡 3：已完成，无反馈 -->
+        <div style="background:#fff;border-radius:12px;margin:0 16px 12px;padding:14px;position:relative;overflow:hidden">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:#07c160;border-radius:3px 0 0 3px"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div style="display:inline-flex;align-items:center;gap:4px;background:#e8f8ef;color:#07c160;font-size:11px;padding:2px 8px;border-radius:4px">✓ 已完成</div>
+            <div style="font-size:12px;color:#999">3月10日 15:00</div>
+          </div>
+          <div style="font-size:15px;font-weight:600;color:#111;margin-bottom:6px">阿里国际商业化产品专场</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px 12px;margin-bottom:10px">
+            <div style="font-size:12px;color:#666">🎯 商业化产品</div>
+            <div style="font-size:12px;color:#666">🏢 阿里巴巴</div>
+            <div style="font-size:12px;color:#666">👨‍🏫 王佳豪导师</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <div style="flex:1;text-align:center;border:1px solid #e5e5e5;border-radius:6px;padding:6px;font-size:12px;color:#555;cursor:pointer">查看完整反馈</div>
+            <div style="flex:1;text-align:center;border:1px solid #e5e5e5;border-radius:6px;padding:6px;font-size:12px;color:#555;cursor:pointer">▶ 播放录屏</div>
+          </div>
+        </div>
+
+        <div style="height:16px"></div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item"><div class="tab-icon">🏠</div><div class="tab-text">首页</div></div>
+        <div class="tab-item"><div class="tab-icon">🎤</div><div class="tab-text">群面</div></div>
+        <div class="tab-item"><div class="tab-icon">👨‍🏫</div><div class="tab-text">师资</div></div>
+        <div class="tab-item"><div class="tab-icon">🏆</div><div class="tab-text">案例</div></div>
+        <div class="tab-item active"><div class="tab-icon">👤</div><div class="tab-text" style="color:#07c160">我的</div></div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 10 · 历史面试列表</strong>群面/单面 Tab · 状态标记 · 快捷操作</div>
+  </div>
+
+  <!-- ===== 11. 面试详情页（时间+反馈+录屏） ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back" style="font-size:16px;color:#07c160">‹ 返回</div>
+        <div class="nav-title">面试详情</div>
+        <div class="nav-right"><span style="font-size:16px;color:#07c160">分享</span></div>
+      </div>
+      <div class="content">
+
+        <!-- 面试基础信息 -->
+        <div style="background:#fff;padding:16px;border-bottom:0.5px solid #e5e5e5">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div style="background:#e8f8ef;color:#07c160;font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px">✓ 群面已完成</div>
+            <div style="font-size:12px;color:#999">2026-03-22</div>
+          </div>
+          <div style="font-size:18px;font-weight:700;color:#111;margin-bottom:10px">腾讯产品经理模拟群面</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:#f7f7f7;border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;color:#999;margin-bottom:4px">📅 面试时间</div>
+              <div style="font-size:13px;font-weight:600;color:#111">3月22日 14:00–16:00</div>
+            </div>
+            <div style="background:#f7f7f7;border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;color:#999;margin-bottom:4px">⏱ 时长</div>
+              <div style="font-size:13px;font-weight:600;color:#111">2小时3分钟</div>
+            </div>
+            <div style="background:#f7f7f7;border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;color:#999;margin-bottom:4px">🎯 目标岗位</div>
+              <div style="font-size:13px;font-weight:600;color:#111">产品经理</div>
+            </div>
+            <div style="background:#f7f7f7;border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;color:#999;margin-bottom:4px">👥 参与人数</div>
+              <div style="font-size:13px;font-weight:600;color:#111">4 人</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 录屏回放 -->
+        <div style="background:#fff;margin-top:8px;padding:16px">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+            <span style="display:inline-block;width:3px;height:14px;background:#07c160;border-radius:2px"></span>
+            面试录屏
+          </div>
+          <div style="background:#111;border-radius:10px;height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;position:relative;overflow:hidden">
+            <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a1a2e,#16213e)"></div>
+            <div style="font-size:40px;position:relative;z-index:1">▶</div>
+            <div style="font-size:13px;color:#fff;font-weight:600;position:relative;z-index:1">点击播放录屏</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.6);position:relative;z-index:1">时长 2:03:14</div>
+            <div style="position:absolute;bottom:10px;right:12px;background:rgba(255,255,255,0.15);border-radius:4px;padding:2px 8px;font-size:11px;color:#fff;z-index:1">HD</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <div style="flex:1;text-align:center;border:1px solid #e5e5e5;border-radius:6px;padding:8px;font-size:12px;color:#555;cursor:pointer">⬇ 下载录屏</div>
+            <div style="flex:1;text-align:center;border:1px solid #e5e5e5;border-radius:6px;padding:8px;font-size:12px;color:#555;cursor:pointer">↑ 分享给朋友</div>
+          </div>
+        </div>
+
+        <!-- 导师反馈 -->
+        <div style="background:#fff;margin-top:8px;padding:16px">
+          <div style="font-size:14px;font-weight:600;color:#111;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+            <span style="display:inline-block;width:3px;height:14px;background:#07c160;border-radius:2px"></span>
+            导师反馈报告
+            <div style="margin-left:auto;background:#e8f8ef;color:#07c160;font-size:11px;padding:2px 8px;border-radius:4px">陈明辉</div>
+          </div>
+
+          <!-- 综合评分 -->
+          <div style="background:#f7f7f7;border-radius:10px;padding:12px 14px;margin-bottom:12px">
+            <div style="font-size:12px;color:#999;margin-bottom:8px">综合评分</div>
+            <div style="display:flex;align-items:baseline;gap:6px">
+              <div style="font-size:36px;font-weight:700;color:#07c160">83</div>
+              <div style="font-size:13px;color:#999">/ 100</div>
+            </div>
+            <!-- 分项评分 -->
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:12px;color:#555;width:64px;flex-shrink:0">结构化表达</div>
+                <div style="flex:1;height:6px;background:#e5e5e5;border-radius:3px;overflow:hidden"><div style="height:100%;background:#07c160;width:88%"></div></div>
+                <div style="font-size:12px;color:#07c160;font-weight:600;width:24px;text-align:right">88</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:12px;color:#555;width:64px;flex-shrink:0">逻辑推演</div>
+                <div style="flex:1;height:6px;background:#e5e5e5;border-radius:3px;overflow:hidden"><div style="height:100%;background:#faad14;width:72%"></div></div>
+                <div style="font-size:12px;color:#faad14;font-weight:600;width:24px;text-align:right">72</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:12px;color:#555;width:64px;flex-shrink:0">团队协作</div>
+                <div style="flex:1;height:6px;background:#e5e5e5;border-radius:3px;overflow:hidden"><div style="height:100%;background:#07c160;width:85%"></div></div>
+                <div style="font-size:12px;color:#07c160;font-weight:600;width:24px;text-align:right">85</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:12px;color:#555;width:64px;flex-shrink:0">表达自信度</div>
+                <div style="flex:1;height:6px;background:#e5e5e5;border-radius:3px;overflow:hidden"><div style="height:100%;background:#07c160;width:80%"></div></div>
+                <div style="font-size:12px;color:#07c160;font-weight:600;width:24px;text-align:right">80</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 文字反馈 -->
+          <div style="font-size:12px;font-weight:600;color:#555;margin-bottom:6px">📝 详细点评</div>
+          <div style="font-size:13px;color:#333;line-height:1.8;background:#f7f7f7;border-radius:8px;padding:12px">
+            整体表现不错，结构化表达思路清晰，能较好地组织发言逻辑。<br><br>
+            <span style="color:#faad14;font-weight:600">需提升：</span>在逻辑推演环节，部分数据支撑不够充分，建议在面试前准备2-3个行业数据作为佐证。<br><br>
+            <span style="color:#07c160;font-weight:600">亮点：</span>团队协作意识突出，善于在讨论中整合他人观点，这是群面的核心加分项。
+          </div>
+        </div>
+
+        <div style="height:16px"></div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item"><div class="tab-icon">🏠</div><div class="tab-text">首页</div></div>
+        <div class="tab-item"><div class="tab-icon">🎤</div><div class="tab-text">群面</div></div>
+        <div class="tab-item"><div class="tab-icon">👨‍🏫</div><div class="tab-text">师资</div></div>
+        <div class="tab-item"><div class="tab-icon">🏆</div><div class="tab-text">案例</div></div>
+        <div class="tab-item active"><div class="tab-icon">👤</div><div class="tab-text" style="color:#07c160">我的</div></div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 11 · 面试详情</strong>录屏回放 · 分项评分 · 导师文字点评</div>
+  </div>
+
+  <!-- ===== 12. 我的简历管理页 ===== -->
+  <div class="screen-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back" style="font-size:16px;color:#07c160">‹ 返回</div>
+        <div class="nav-title">我的简历</div>
+        <div class="nav-right"><span style="font-size:14px;color:#07c160">+ 上传</span></div>
+      </div>
+      <div class="content">
+
+        <!-- 当前简历预览卡 -->
+        <div style="background:#fff;padding:16px;border-bottom:0.5px solid #e5e5e5">
+          <div style="font-size:12px;color:#999;margin-bottom:10px">当前使用简历</div>
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <!-- 简历缩略图 -->
+            <div style="width:72px;height:96px;background:#f5f5f5;border-radius:6px;border:1px solid #e5e5e5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex-shrink:0;position:relative">
+              <div style="font-size:24px">📄</div>
+              <div style="font-size:9px;color:#999">PDF</div>
+              <div style="position:absolute;top:4px;right:4px;background:#07c160;width:8px;height:8px;border-radius:50%"></div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:600;color:#111;margin-bottom:4px">我的简历_2026.pdf</div>
+              <div style="font-size:12px;color:#999;margin-bottom:8px">2.3 MB · 2026年3月20日上传</div>
+              <div style="display:flex;gap:8px">
+                <div style="flex:1;text-align:center;background:#07c160;color:#fff;font-size:12px;font-weight:500;border-radius:6px;padding:6px;cursor:pointer">预览</div>
+                <div style="flex:1;text-align:center;border:1px solid #e5e5e5;color:#555;font-size:12px;border-radius:6px;padding:6px;cursor:pointer">替换</div>
+                <div style="flex:1;text-align:center;border:1px solid #e5e5e5;color:#555;font-size:12px;border-radius:6px;padding:6px;cursor:pointer">⬇ 下载</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 历史版本 -->
+        <div style="background:#fff;margin-top:8px">
+          <div style="padding:14px 16px 0;font-size:13px;font-weight:600;color:#555">历史版本</div>
+          <div style="padding:0 16px">
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:0.5px solid #f5f5f5">
+              <div style="width:40px;height:52px;background:#f5f5f5;border-radius:4px;border:1px solid #e5e5e5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0">
+                <div style="font-size:16px">📄</div>
+                <div style="font-size:8px;color:#999">PDF</div>
+              </div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:500;color:#111">我的简历_2025.pdf</div>
+                <div style="font-size:11px;color:#999;margin-top:2px">1.8 MB · 2025年12月15日</div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <div style="font-size:12px;color:#07c160;cursor:pointer">预览</div>
+                <div style="font-size:12px;color:#07c160;cursor:pointer">设为当前</div>
+                <div style="font-size:12px;color:#ff4d4f;cursor:pointer">删除</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 0">
+              <div style="width:40px;height:52px;background:#f5f5f5;border-radius:4px;border:1px solid #e5e5e5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0">
+                <div style="font-size:16px">📝</div>
+                <div style="font-size:8px;color:#999">DOC</div>
+              </div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:500;color:#111">曾柳青简历_校招版.docx</div>
+                <div style="font-size:11px;color:#999;margin-top:2px">0.9 MB · 2025年9月3日</div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <div style="font-size:12px;color:#07c160;cursor:pointer">预览</div>
+                <div style="font-size:12px;color:#07c160;cursor:pointer">设为当前</div>
+                <div style="font-size:12px;color:#ff4d4f;cursor:pointer">删除</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 上传新简历区 -->
+        <div style="margin:12px 16px;border:1.5px dashed #d9d9d9;border-radius:10px;padding:24px;text-align:center;cursor:pointer">
+          <div style="font-size:32px;margin-bottom:8px">⬆️</div>
+          <div style="font-size:14px;font-weight:500;color:#555;margin-bottom:4px">上传新版简历</div>
+          <div style="font-size:12px;color:#999">支持 PDF / Word · 最大 10MB</div>
+        </div>
+
+        <!-- 小提示 -->
+        <div style="margin:0 16px 12px;background:#fffbe8;border-radius:8px;padding:12px 14px;border:1px solid #ffe58f">
+          <div style="font-size:12px;font-weight:600;color:#d48806;margin-bottom:4px">💡 简历小贴士</div>
+          <div style="font-size:12px;color:#666;line-height:1.7">报名时将自动使用「当前简历」提交给导师。建议保持简历最新版本，以便导师提供更针对性的辅导。</div>
+        </div>
+
+        <div style="height:16px"></div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item"><div class="tab-icon">🏠</div><div class="tab-text">首页</div></div>
+        <div class="tab-item"><div class="tab-icon">🎤</div><div class="tab-text">群面</div></div>
+        <div class="tab-item"><div class="tab-icon">👨‍🏫</div><div class="tab-text">师资</div></div>
+        <div class="tab-item"><div class="tab-icon">🏆</div><div class="tab-text">案例</div></div>
+        <div class="tab-item active"><div class="tab-icon">👤</div><div class="tab-text" style="color:#07c160">我的</div></div>
+      </div>
+    </div>
+    <div class="screen-label"><strong>页面 12 · 简历管理</strong>当前简历预览 · 历史版本管理 · 上传新版本</div>
+  </div>
+
+</div><!-- end screens-grid row 3 -->
+
+<!-- 页脚说明 -->
+<div style="width:100%;max-width:1500px;padding:20px 24px 48px;text-align:center;border-top:1px solid #e5e5e5;margin-top:8px">
+  <p style="font-size:13px;color:#555;font-weight:600;margin-bottom:8px">完整页面流程</p>
+  <p style="font-size:12px;color:#aaa;line-height:2">
+    首页 → 群面场次列表 → 群面详情 → <strong style="color:#07c160">提交简历</strong> → 支付 ✓<br>
+    师资介绍 → 单面预约时间 → <strong style="color:#07c160">提交简历</strong> → 支付 ✓<br>
+    案例展示 → 案例详情 ✓<br>
+    <strong style="color:#07c160">「我的」</strong> → 历史面试列表 → 面试详情（录屏 + 反馈）✓<br>
+    <strong style="color:#07c160">「我的」</strong> → 简历管理（上传 / 历史版本）✓
+  </p>
+</div>
+
+</body>
+</html>
