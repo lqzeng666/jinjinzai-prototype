@@ -1038,9 +1038,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 4px;
   }
   .cs-modal-title { font-size: 16px; font-weight: 700; color: #111; }
+  .cs-modal-sub { font-size: 12px; color: #999; margin-bottom: 14px; }
   .cs-modal-close {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -1048,67 +1049,66 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 14px; color: #999; cursor: pointer;
   }
-  .cs-options {
+  /* 双码并排 */
+  .cs-dual-row {
     display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: 10px;
+    margin-bottom: 14px;
   }
-  .cs-option {
+  .cs-card {
     flex: 1;
     background: #f7f7f7;
     border-radius: 14px;
-    padding: 16px 12px;
+    padding: 12px 8px 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    border: 2px solid transparent;
+    gap: 6px;
+    border: 1.5px solid #e8f8ef;
   }
-  .cs-option.active { border-color: #07c160; background: #e8f8ef; }
-  .cs-option-icon { font-size: 28px; }
-  .cs-option-name { font-size: 13px; font-weight: 600; color: #111; }
-  .cs-option-desc { font-size: 11px; color: #999; text-align: center; line-height: 1.4; }
-  .cs-qr-area {
-    background: #f7f7f7;
-    border-radius: 14px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+  .cs-card-badge {
+    font-size: 10px;
+    font-weight: 600;
+    color: #07c160;
+    background: #e8f8ef;
+    border-radius: 8px;
+    padding: 2px 8px;
+    align-self: flex-start;
+    margin-bottom: 2px;
   }
   .cs-qr-mock {
-    width: 120px; height: 120px;
-    border-radius: 10px;
+    width: 88px; height: 88px;
+    border-radius: 8px;
     background: #fff;
     border: 1px solid #e5e5e5;
     display: flex; align-items: center; justify-content: center;
     position: relative;
     overflow: hidden;
   }
-  .cs-qr-inner {
-    width: 88px; height: 88px;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: repeat(7, 1fr);
-    gap: 2px;
-  }
-  .cs-qr-cell {
-    border-radius: 1px;
-  }
-  .cs-qr-label { font-size: 13px; color: #555; font-weight: 500; }
-  .cs-qr-sub { font-size: 11px; color: #999; text-align: center; }
-  .cs-work-time {
-    background: #fff;
-    border-radius: 10px;
-    padding: 10px 14px;
+  .cs-qr-label { font-size: 12px; color: #333; font-weight: 600; }
+  .cs-qr-sub { font-size: 10px; color: #999; text-align: center; }
+  /* 一键全部添加按钮 */
+  .cs-add-all-btn {
     width: 100%;
-    text-align: center;
-    margin-top: 4px;
+    height: 44px;
+    background: linear-gradient(90deg, #07c160, #05a050);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(7,193,96,0.35);
+    cursor: pointer;
+    margin-bottom: 10px;
   }
-  .cs-work-time p { font-size: 12px; color: #07c160; font-weight: 500; }
-  .cs-work-time span { font-size: 11px; color: #999; }
+  .cs-work-time {
+    text-align: center;
+  }
+  .cs-work-time p { font-size: 11px; color: #07c160; font-weight: 500; }
+  .cs-work-time span { font-size: 10px; color: #999; }
 
   /* 首页浮动客服按钮 */
   .float-cs-btn {
@@ -1347,78 +1347,99 @@
             <div class="cs-modal-title">联系劲面仔服务团队</div>
             <div class="cs-modal-close">✕</div>
           </div>
-          <!-- 选项 -->
-          <div class="cs-options">
-            <div class="cs-option active">
-              <div class="cs-option-icon">💼</div>
-              <div class="cs-option-name">企业微信</div>
-              <div class="cs-option-desc">扫码添加<br>专属顾问</div>
+          <div class="cs-modal-sub">扫码添加，立即获得专属服务</div>
+          <!-- 双码并排 -->
+          <div class="cs-dual-row">
+            <!-- 企业微信 -->
+            <div class="cs-card">
+              <div class="cs-card-badge">💼 企业微信</div>
+              <div class="cs-qr-mock">
+                <svg width="80" height="80" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="6" y="6" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
+                  <rect x="12" y="12" width="14" height="14" rx="1" fill="#111"/>
+                  <rect x="64" y="6" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
+                  <rect x="70" y="12" width="14" height="14" rx="1" fill="#111"/>
+                  <rect x="6" y="64" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
+                  <rect x="12" y="70" width="14" height="14" rx="1" fill="#111"/>
+                  <rect x="38" y="6" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="46" y="6" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="38" y="14" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="54" y="14" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="6" y="38" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="14" y="46" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="6" y="54" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="38" y="38" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="46" y="38" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="54" y="38" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="38" y="46" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="54" y="46" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="46" y="54" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="64" y="38" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="72" y="38" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="80" y="38" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="64" y="46" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="38" y="64" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="54" y="64" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="46" y="72" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="38" y="80" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="64" y="64" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="80" y="72" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="80" y="80" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="40" y="40" width="16" height="16" rx="3" fill="#fff"/>
+                  <text x="48" y="52" text-anchor="middle" font-size="12" fill="#07c160" font-weight="bold">劲</text>
+                </svg>
+              </div>
+              <div class="cs-qr-label">专属顾问</div>
+              <div class="cs-qr-sub">添加后备注「面试」</div>
             </div>
-            <div class="cs-option">
-              <div class="cs-option-icon">💬</div>
-              <div class="cs-option-name">微信客服</div>
-              <div class="cs-option-desc">扫码进入<br>官方客服</div>
-            </div>
-            <div class="cs-option">
-              <div class="cs-option-icon">👥</div>
-              <div class="cs-option-name">交流群</div>
-              <div class="cs-option-desc">加入求职<br>交流社群</div>
+            <!-- 交流群 -->
+            <div class="cs-card">
+              <div class="cs-card-badge">👥 交流群</div>
+              <div class="cs-qr-mock">
+                <svg width="80" height="80" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="6" y="6" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
+                  <rect x="12" y="12" width="14" height="14" rx="1" fill="#111"/>
+                  <rect x="64" y="6" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
+                  <rect x="70" y="12" width="14" height="14" rx="1" fill="#111"/>
+                  <rect x="6" y="64" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
+                  <rect x="12" y="70" width="14" height="14" rx="1" fill="#111"/>
+                  <rect x="46" y="6" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="54" y="6" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="38" y="14" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="46" y="14" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="6" y="38" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="14" y="38" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="6" y="46" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="38" y="38" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="54" y="38" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="46" y="46" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="38" y="54" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="54" y="54" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="64" y="38" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="80" y="38" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="72" y="46" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="64" y="54" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="80" y="54" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="46" y="64" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="54" y="64" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="38" y="72" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="38" y="80" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="54" y="80" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="64" y="72" width="5" height="5" rx="1" fill="#111"/>
+                  <rect x="72" y="80" width="5" height="5" rx="1" fill="#07c160"/>
+                  <rect x="40" y="40" width="16" height="16" rx="3" fill="#fff"/>
+                  <text x="48" y="52" text-anchor="middle" font-size="11" fill="#07c160" font-weight="bold">群</text>
+                </svg>
+              </div>
+              <div class="cs-qr-label">求职交流群</div>
+              <div class="cs-qr-sub">分享经验·互助备战</div>
             </div>
           </div>
-          <!-- 二维码展示 -->
-          <div class="cs-qr-area">
-            <div class="cs-qr-mock">
-              <!-- 模拟二维码图案 -->
-              <svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-                <!-- 左上定位框 -->
-                <rect x="6" y="6" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
-                <rect x="12" y="12" width="14" height="14" rx="1" fill="#111"/>
-                <!-- 右上定位框 -->
-                <rect x="64" y="6" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
-                <rect x="70" y="12" width="14" height="14" rx="1" fill="#111"/>
-                <!-- 左下定位框 -->
-                <rect x="6" y="64" width="26" height="26" rx="3" fill="none" stroke="#111" stroke-width="3"/>
-                <rect x="12" y="70" width="14" height="14" rx="1" fill="#111"/>
-                <!-- 数据点模拟 -->
-                <rect x="38" y="6" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="46" y="6" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="38" y="14" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="54" y="14" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="6" y="38" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="14" y="46" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="6" y="54" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="38" y="38" width="5" height="5" rx="1" fill="#07c160"/>
-                <rect x="46" y="38" width="5" height="5" rx="1" fill="#07c160"/>
-                <rect x="54" y="38" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="38" y="46" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="54" y="46" width="5" height="5" rx="1" fill="#07c160"/>
-                <rect x="46" y="54" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="54" y="54" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="64" y="38" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="72" y="38" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="80" y="38" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="64" y="46" width="5" height="5" rx="1" fill="#07c160"/>
-                <rect x="80" y="46" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="72" y="54" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="38" y="64" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="54" y="64" width="5" height="5" rx="1" fill="#07c160"/>
-                <rect x="46" y="72" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="38" y="80" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="54" y="80" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="64" y="64" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="80" y="72" width="5" height="5" rx="1" fill="#111"/>
-                <rect x="72" y="80" width="5" height="5" rx="1" fill="#07c160"/>
-                <rect x="80" y="80" width="5" height="5" rx="1" fill="#111"/>
-                <!-- 中心 logo -->
-                <rect x="40" y="40" width="16" height="16" rx="3" fill="#fff"/>
-                <text x="48" y="52" text-anchor="middle" font-size="12" fill="#07c160" font-weight="bold">劲</text>
-              </svg>
-            </div>
-            <div class="cs-qr-label">扫码添加企业微信顾问</div>
-            <div class="cs-work-time">
-              <p>🟢 在线服务中</p>
-              <span>工作日 9:00–22:00 · 周末 10:00–20:00</span>
-            </div>
+          <!-- 一键全部添加 -->
+          <div class="cs-add-all-btn">✅ 全部扫码添加</div>
+          <div class="cs-work-time">
+            <p>🟢 在线服务中</p>
+            <span>工作日 9:00–22:00 · 周末 10:00–20:00</span>
           </div>
         </div>
       </div>
@@ -1430,7 +1451,7 @@
         <div class="tab-item"><div class="tab-icon">👤</div><div class="tab-text">我的</div></div>
       </div>
     </div>
-    <div class="screen-label"><strong>页面 0-C · 首页联系客服</strong>浮动客服按钮 · 弹窗：企微/微信/社群</div>
+    <div class="screen-label"><strong>页面 0-C · 首页联系客服</strong>浮动客服按钮 · 弹窗：企微 + 交流群双码一键添加</div>
   </div>
 
 </div><!-- end screens-grid login -->
@@ -2498,7 +2519,6 @@
                 <div style="font-size:14px;font-weight:500;color:#111">联系客服</div>
                 <div style="display:flex;gap:6px;margin-top:4px">
                   <div style="background:#e8f8ef;color:#07c160;font-size:10px;padding:1px 7px;border-radius:10px">企业微信</div>
-                  <div style="background:#e8f2fe;color:#1677ff;font-size:10px;padding:1px 7px;border-radius:10px">微信客服</div>
                   <div style="background:#f5f5f5;color:#555;font-size:10px;padding:1px 7px;border-radius:10px">交流群</div>
                 </div>
               </div>
@@ -2855,7 +2875,7 @@
     案例展示 → 案例详情 ✓<br>
     <strong style="color:#07c160">「我的」</strong> → 历史面试列表 → 面试详情（录屏 + 反馈）✓<br>
     <strong style="color:#07c160">「我的」</strong> → 简历管理（上传 / 历史版本）✓<br>
-    首页浮动按钮 / 「我的」→ 联系客服（<strong style="color:#07c160">企业微信</strong> · 微信客服 · 交流群）✓
+    首页浮动按钮 / 「我的」→ 联系客服（<strong style="color:#07c160">企业微信</strong> · 交流群，双码一键添加）✓
   </p>
 </div>
 
